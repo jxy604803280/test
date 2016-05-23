@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.app4m.mybatis.mapper.cmindMapper">
+	<!-- 将属性和列名对应起来 -->
+	<resultMap id="userResultMap" type="com.app4m.app.user.entity.AppUser">
+		<id property="id" column="id"/>
+		<result property="appUserName"    column="user_name"/>
+		<result property="userAccount"    column="user_account"/>
+		<result property="password"       column="password" />
+		<result property="status"         column="status"/>
+		<result property="userMail"       column="user_mail"/>
+		<result property="activeCode"     column="active_code"/>
+		<result property="relationStatus" column="relation_status"/>
+		<result property="newMessages"    column="new_messages"/>
+  	</resultMap>
+  	
+  	<resultMap id="replyMap" type="com.app4m.app.cmind.entity.Reply">
+  		<id property="replyId" column="reply_id"/>
+  		<result property="replyContext"   column="reply_context"/>
+  		<result property="cmindId"        column="cmind_id"/>
+  		<result property="targetReplyId"  column="target_reply_id"/>
+  		<result property="senderName"     column="sender_name"/>
+  		<result property="receiverName"   column="receiver_name"/>
+  		<result property="replyDate"      column="reply_date"/> 
+ 		<result property="replyDelFlag"   column="reply_del_flag"/>
+  	</resultMap>
+  	
+  	<resultMap id="cmindResultMap" type="com.app4m.app.cmind.entity.Cmind">
+  		<id property="cmindId" column="cmind_id"/>
+  		<result property="userId"         column="user_id"/>
+  		<result property="context" 		  column="context"/>
+  		<result property="photoAddress"   column="photo_address"/>
+  		<result property="cmindDate"	  column="cmind_date"/>
+  		<result property="cmindDelFlag"   column="cmind_del_flag"/> 
+		<collection property="replyList"  resultMap="replyMap"/>
+  	</resultMap>
+  	
+    <select id="selectCminds" resultMap="cmindResultMap">
+    	SELECT * FROM t_cmind WHERE cmind_del_flag != -1 ORDER BY cmind_date desc
+    </select>
+  	
+  	<insert id="insertCmind" parameterType="com.app4m.app.cmind.entity.Cmind">
+  		INSERT INTO t_cmind(user_id,context,photo_address,cmind_date) VALUES(#{userId},#{context},#{photoAddress},#{cmindDate})
+  	</insert>
+</mapper>  
