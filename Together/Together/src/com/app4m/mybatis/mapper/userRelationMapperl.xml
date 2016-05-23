@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.app4m.mybatis.mapper.userRelationMapper">
+
+	<!-- 将属性和列名对应起来 -->
+	<resultMap  id="userResultMap" 		  type="com.app4m.app.user.entity.AppUser">
+		<id     property="id"             column="id"/>
+		<result property="appUserName"    column="user_name"/>
+		<result property="userAccount"    column="user_account"/>
+		<result property="password"       column="password" />
+		<result property="status"         column="status"/>
+		<result property="userMail"       column="user_mail"/>
+		<result property="activeCode"     column="active_code"/>
+		<result property="relationStatus" column="relation_status"/>
+		<result property="newMessages"    column="new_messages"/>
+  	</resultMap>
+  	
+  	<resultMap  id="userRelationMap"      type="com.app4m.app.user.entity.UserRelations">
+  		<id     property="id"    		  column="id"/>
+  		<result property="smallId"		  column="small_id"/>
+  		<result property="bigId"          column="big_id"/>
+  		<result property="relationStatus" column="relation_status"/>
+  	</resultMap>
+
+
+  	<!-- 查询用户间的关系，返回状态 -->
+  	<select id="selectUserRelation" parameterType="java.util.HashMap" resultMap="userRelationMap">
+  		SELECT id,relation_status FROM t_user_relation t 
+  			   WHERE t.small_Id = #{smallId} AND t.big_Id = #{bigId} 
+  	</select>
+  	
+  	<!-- 当用户关系不存在时，插入新纪录 -->
+  	<insert id="insertUserRelation" parameterType="java.util.HashMap" >
+  		INSERT t_user_relation(small_id,big_id,relation_status)  values(#{smallId},#{bigId},#{relationStatus});
+  	</insert>
+  	
+  	<!-- 修改用户关系记录 -->
+  	<update id="updateUserRelation" parameterType="java.util.HashMap" >
+  		UPDATE t_user_relation t 
+  			   SET t.relation_status = #{relationStatus} WHERE t.id = #{id}
+  	</update>
+	<!-- 查询我关注的人 或者拉黑的人 -->
+	<select id="selectFollows" parameterType="java.util.HashMap" resultMap="userResultMap">
+		<if test="currentUserId =='' or currentUserId ==null">
+			SELECT t.id,t.user_account,t.user_name,t.password,t.status,t.user_mail,t.active_code,u.relation_status FROM t_app_user t 
+			JOIN t_user_relation u ON   
+			   (small_id = #{id} AND u.relation_status  >= #{smallFollowStatus} AND u.big_id   = t.id) 
+				or
+			   (u.big_id = #{id} AND #{bigFollowStatus} >= u.relation_status    AND u.small_id = t.id AND u.relation_status > #{deFriendStatus})
+		</if>
+		<if test="currentUserId !='' and currentUserId !=null">
+			SELECT t2.* , u2.relation_status  FROM (
+				SELECT t.* FROM t_app_user t JOIN t_user_relation u ON   
+					(small_id = #{id} AND u.relation_status  >= #{smallFollowStatus} AND u.big_id   = t.id) 
+					OR
+					(u.big_id = #{id} AND #{bigFollowStatus} >= u.relation_status    AND u.small_id = t.id AND u.relation_status > #{deFriendStatus}) 
+					) t2  LEFT OUTER JOIN  t_user_relation u2
+						ON
+						(
+						    (t2.id = u2.small_id AND u2.big_id   = #{currentUserId})
+						     OR
+						    (t2.id = u2.big_id   AND u2.small_id = #{currentUserId})
+						)
+		</if>
+	</select>
+	
+	<!-- 查询关注我的人 -->
+	<select id="selectFans" parameterType="java.util.HashMap" resultMap="userResultMap">
+		<if test="currentUserId =='' or currentUserId ==null">
+			select t.id,t.user_account,t.user_name,t.password,t.status,t.user_mail,t.active_code,u.relation_status FROM t_app_user t 
+				join t_user_relation u on   
+				   (u.big_id = #{id}   and u.relation_status  >= #{smallFollowStatus} and u.small_id = t.id) 
+					or
+				   (u.small_id = #{id} and #{bigFollowStatus} >= u.relation_status    and u.relation_status > #{deFriendStatus} and u.big_id = t.id)
+		</if>
+		<if test="currentUserId !='' and currentUserId !=null">
+			SELECT t2.* , u2.relation_status  FROM (
+				select t.* FROM t_app_user t 
+					JOIN t_user_relation u ON   
+				   	(u.big_id = #{id}   AND u.relation_status  >= #{smallFollowStatus} AND u.small_id = t.id) 
+						OR
+				   	(u.small_id = #{id} AND #{bigFollowStatus} >= u.relation_status    AND u.relation_status > #{deFriendStatus} AND u.big_id = t.id) )t2  
+				   	LEFT OUTER JOIN  t_user_relation u2
+						ON
+						(
+						    (t2.id = u2.small_id AND u2.big_id   = #{currentUserId})
+						     OR
+						    (t2.id = u2.big_id   AND u2.small_id = #{currentUserId})
+						)
+		</if>
+	</select>
+	
+	<!-- 查询关注我的人的数量  status 1表示关注 -1是拉黑-->
+	<select id="selectFansCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		select count(*) from t_user_relation u where
+			(u.small_id = #{id} and #{bigFollowStatus} >= u.relation_status and u.relation_status >= #{deFriendStatus} )
+			or
+			(u.big_id   = #{id} and u.relation_status  >= #{smallFollowStatus})  
+	</select>
+	
+	<!-- 查询我关注的人的数量 -->
+	<select id="selectFollowsCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		select count(*) from t_user_relation u where
+			(u.small_id = #{id} and u.relation_status  >= #{smallFollowStatus})
+			or
+			(u.big_id   = #{id} and #{bigFollowStatus} >= u.relation_status and u.relation_status >= #{deFriendStatus}) 
+	</select>
+	
+	<!-- 查询陌生人 -->
+	<select id="selectStrangers" parameterType="java.util.HashMap" resultMap="userResultMap">
+		SELECT * FROM t_app_user t 
+			WHERE t.id NOT IN (
+				SELECT small_id 'id' from t_user_relation u where u.big_id    = #{id} AND  #{bigFollowStatus}  >= u.relation_status   OR   #{deFriendStatus} >= u.relation_status
+				union 
+				select big_id 'id' from t_user_relation u2  where u2.small_id = #{id} AND  (u2.relation_status >= #{smallFollowStatus} OR  #{deFriendStatus} >= u2.relation_status )
+				) and t.id != #{id} 
+	</select>
+</mapper>  

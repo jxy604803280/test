@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="Together"
+  id="myeclipse.1458449327509"
+  context-root="/Together"
+  j2ee-spec="5.0"
+  archive="Together.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

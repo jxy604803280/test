@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.app4m.mybatis.mapper.appUserMapper">
+
+	<!-- 将属性和列名对应起来 -->
+	<resultMap id="userResultMap" type="com.app4m.app.user.entity.AppUser">
+		<id property="id" column="id"/>
+		<result property="appUserName"    column="user_name"/>
+		<result property="userAccount"    column="user_account"/>
+		<result property="password"       column="password" />
+		<result property="status"         column="status"/>
+		<result property="userMail"       column="user_mail"/>
+		<result property="activeCode"     column="active_code"/>
+		<result property="relationStatus" column="relation_status"/>
+		<result property="newMessages"    column="new_messages"/>
+  	</resultMap>
+  	
+	<!--  新增记录  -->  
+    <insert id="insertAppUser" parameterType="com.app4m.app.user.entity.AppUser" >  
+        insert into t_app_user(user_name,user_account,password,status,user_mail,active_code) values(#{appUserName},
+        						#{userAccount},#{password}
+        <if test=" status != null and status !='' ">,#{status}</if>
+        <if test=" status == null or status =='' ">,0</if>
+        , #{userMail},#{activeCode})
+    </insert> 
+    
+    <!-- 更新用户信息 -->
+    <update id="updateAppUser" parameterType="com.app4m.app.user.entity.AppUser">
+    	update t_app_user set status = #{status}
+    	 <if test="appUserName != null and appUserName != '' ">
+    	 	and user_name = #{appUserName}
+    	 </if>
+    	 <if test="userAccount != null and userAccount !='' ">
+    	 	and user_account = #{userAccount}
+    	 </if>
+    	 <if test="password != null and password !='' ">
+    	 	and password = #{password}
+    	 </if>
+    	 <if test="userMail !=null and userMail !='' ">
+    	 	and user_mail = #{userMail}
+    	 </if>
+    	 	where 	  
+    	 <if test="id == null or id =='' ">
+    	 	user_mail = #{userMail}
+    	 </if>
+    	 <if test="id !=null and id!='' ">
+    	 	id = #{id}
+    	 </if>
+    	 <if test="activeCode !=null and activeCode !=''">
+    	 	and active_code = #{activeCode}
+    	 </if>
+    </update> 
+    
+    <!-- 查询个人用户信息 -->
+    <select id="selectAppUser" parameterType="com.app4m.app.user.entity.AppUser" resultMap="userResultMap">
+    	select * from t_app_user  
+    	<if test="id != null and id !='' ">
+    		where id = #{id}
+    	</if> 
+    	<if test="userMail != null and userMail!=''">
+    		where user_mail = #{userMail}
+    	</if>
+    </select>
+	
+</mapper>  
