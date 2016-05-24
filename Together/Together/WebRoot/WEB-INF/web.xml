@@ -17,7 +17,11 @@
   		<!-- 何时启动  大于0的值表示容器启动时初始化此servlet，正值越小优先级越高-->
   		<load-on-startup>1</load-on-startup>
   </servlet>
-  
+  <!-- 拦截 -->
+  <servlet-mapping>
+  	<servlet-name>springMVC</servlet-name>
+  	<url-pattern>/</url-pattern>
+  </servlet-mapping>  
   <!-- 解决乱码问题 -->
   <filter>  
         <filter-name>characterEncodingFilter</filter-name>  
@@ -58,11 +62,7 @@
  
  
  
-  <!-- 拦截 -->
-  <servlet-mapping>
-  	<servlet-name>springMVC</servlet-name>
-  	<url-pattern>/</url-pattern>
-  </servlet-mapping>
+
   
   
 </web-app>

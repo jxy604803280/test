@@ -11,6 +11,7 @@ import base.entity.BaseEntity;
 * @date 2016-5-17 下午5:24:21 
 *
  */
+
 @SuppressWarnings("serial")
 public class Cmind extends BaseEntity{
 	private String  cmindId; //Cmind的id
@@ -20,7 +21,7 @@ public class Cmind extends BaseEntity{
 	private List<Reply> replyList; //该Cmind的相关回复
 	private String  cmindDate;//发表Cmind的时间
 	private int     cmindDelFlag;//-1表示删除
-	
+	public final static String DELFLAG = "-1";  
 	public String getCmindId() {
 		return cmindId;
 	}

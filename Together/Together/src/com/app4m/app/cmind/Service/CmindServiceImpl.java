@@ -1,6 +1,7 @@
 package com.app4m.app.cmind.Service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -24,8 +25,8 @@ public class CmindServiceImpl extends BaseService implements ICmindService{
 	* @throws 
 	*
 	 */
-	public List<Cmind> selectCminds() {		
-		return cmindDao.selectCminds();
+	public List<Cmind> selectCminds(Map<String,String> map) {		
+		return cmindDao.selectCminds(map);
 	}
 	
 	/**

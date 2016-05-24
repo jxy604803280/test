@@ -3,7 +3,7 @@ package com.app4m.app.cmind.entity;
 import base.entity.BaseEntity;
 
 @SuppressWarnings("serial")
-class Reply extends BaseEntity{
+public class Reply extends BaseEntity{
 	private String replyId;//replyId
 	private String replyContext;//回复内容
 	private String cmindId;//关联的Cmind

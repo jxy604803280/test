@@ -38,7 +38,8 @@
   	</resultMap>
   	
     <select id="selectCminds" resultMap="cmindResultMap">
-    	SELECT * FROM t_cmind WHERE cmind_del_flag != -1 ORDER BY cmind_date desc
+    	SELECT * FROM t_cmind WHERE user_id = #{userId} 
+    		AND cmind_del_flag != #{cmindDelFlag} ORDER BY cmind_date desc
     </select>
   	
   	<insert id="insertCmind" parameterType="com.app4m.app.cmind.entity.Cmind">
